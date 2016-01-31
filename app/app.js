@@ -28,6 +28,11 @@ Convos.allow({
   }
 })
 
+Meteor.users.allow({
+  insert: function(userId, doc) {
+    return !!userId;
+  }
+})
 
 // CLIENT //
 
@@ -41,6 +46,10 @@ if (Meteor.isClient) {
   Template.SideMenu.helpers({
     users: function() {
       return Meteor.users.find();
+    },
+
+    conversations: function() {
+      return Convos.find();
     }
   });
 
@@ -83,7 +92,16 @@ if (Meteor.isClient) {
       return Session.get('activeConvo');
     }
   })
-  // 
+
+
+  Template.SideMenu.events({
+    'click [data-conversation-start]': function(event, template) {
+      var person = this.profile.name;
+
+      Convos.insert({with: person})
+      Session.set('activeConvo', person);
+    }
+  }) 
 };
 
 // SERVER //

@@ -31,8 +31,16 @@
   <h2>Users</h2>
 
   {{#each users}}
-    <div class="username">
+    <div data-conversation-start class="username">
       {{this.profile.name}}
+    </div>
+  {{/each}}
+
+  <h2>Current Conversations</h2>
+
+  {{#each conversations}}
+    <div>
+      {{conversation.with}}
     </div>
   {{/each}}
 </template>

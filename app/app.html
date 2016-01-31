@@ -20,8 +20,13 @@
 
 <!-- LAYOUT TEMPLATE -->
 <template name="Layout">
-  {{> SideMenu}}
-  {{> LoiterRooms}}
+  <div id="sideMenu">
+    {{> SideMenu}}
+  </div>
+
+  <div id="loiterRooms">
+    {{> LoiterRooms}}
+  </div>
 </template>
 
 <!-- SIDEMENU TEMPLATE -->
@@ -36,7 +41,7 @@
     </div>
   {{/each}}
 
-  <h2>Current Conversations</h2>
+  <h2>Current Loiterings</h2>
 
   {{#each conversations}}
     <div data-conversation>
@@ -73,8 +78,7 @@
 
 <template name="MessageInfo">
   <div>
-    <span>{{login}} - </span>
-    <span>{{prettyTimestamp timestamp}}</span>
+    <span><strong>{{login}} - {{prettyTimestamp timestamp}}</strong></span>
   </div>
 
   <div class="message">

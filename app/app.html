@@ -1,0 +1,85 @@
+<head>
+  <title>app</title>
+</head>
+
+<body>
+  {{#if currentUser}}
+    {{> Layout}}
+  {{else}}
+    {{> Login}}
+  {{/if}}
+</body>
+
+<!-- LOGIN TEMPLATE -->
+<template name="Login">
+  <div class="login">
+    <h3>Please sign in to start loitering.</h3>
+    {{> loginButtons}}
+  </div>
+</template>
+
+<!-- LAYOUT TEMPLATE -->
+<template name="Layout">
+  {{> SideMenu}}
+  {{> LoiterRooms}}
+</template>
+
+<!-- SIDEMENU TEMPLATE -->
+<template name="SideMenu">
+  Hi, {{> loginButtons}}
+
+  <h2>Users</h2>
+
+  {{#each users}}
+    <div class="username">
+      {{this.profile.name}}
+    </div>
+  {{/each}}
+</template>
+
+<!-- LOITER ROOM TEMPLATE -->
+<template name="LoiterRooms">
+  <h2>Loitering with {{activeConvo}}</h2>
+
+  {{#if currentUser}}
+    <section>
+      {{> MessageHistory}}
+    </section>
+
+    <footer>
+      {{> SendMessage}}
+    </footer>
+  {{/if}}
+</template>
+
+<template name="MessageHistory">
+  <div class="messages">
+    <ul>
+    {{#each messages}}
+      <li>
+        {{> MessageInfo}}
+      </li>
+    {{else}}
+      <li>No messages yet.</li>
+    {{/each}}
+  </ul>
+  </div>
+</template>
+
+<template name="MessageInfo">
+  <div>
+    <span>{{login}} - </span>
+    <span>{{prettyTimestamp timestamp}}</span>
+  </div>
+
+  <div class="message">
+    {{message}}
+  </div>
+</template>
+
+<template name="SendMessage">
+  <form>
+    <input class="text" type="text" autofocus name="message" placeholder="Send a message" />
+    <input class="send" type="submit" value="Send" />
+  </form>
+</template>

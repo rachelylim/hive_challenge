@@ -54,13 +54,9 @@ if (Meteor.isClient) {
   });
 
   Template.MessageHistory.helpers({
-    messages: function() {
-      return Messages.find();
-    },
   });
 
   Template.MessageInfo.helpers({
-
     prettyTimestamp: function(timestamp) {
       return moment(timestamp).calendar();
     }
@@ -74,13 +70,14 @@ if (Meteor.isClient) {
       var messageEl = template.find('[name=message]');
       var message = messageEl.value;
       var user = Meteor.user().profile.name;
+      var person = Session.get('activeConvo');
       // console.log(message);
 
       Messages.insert({
         login: user,
         timestamp: new Date,
         message: message,
-        room: Session.get('activeConvo')
+        with: person
       });
 
       form.reset();
@@ -90,7 +87,12 @@ if (Meteor.isClient) {
   Template.LoiterRooms.helpers({
     activeConvo: function() {
       return Session.get('activeConvo');
-    }
+    },
+
+    messages: function(data) {
+      var person = Session.get('activeConvo');
+      return Messages.find({with: person});
+    },
   })
 
 

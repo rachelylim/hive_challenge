@@ -48,30 +48,27 @@
 <!-- LOITER ROOM TEMPLATE -->
 <template name="LoiterRooms">
   <h2>Loitering with {{activeConvo}}</h2>
-
-  {{#if currentUser}}
     <section>
-      {{> MessageHistory}}
+      <div class="messages-with-{{activeConvo}}">
+        <ul>
+        {{#each messages}}
+          <li>
+            {{> MessageInfo}}
+          </li>
+        {{else}}
+          <li>No messages yet.</li>
+        {{/each}}
+      </ul>
+      </div>
+      <!-- {{> MessageHistory}} -->
     </section>
 
     <footer>
       {{> SendMessage}}
     </footer>
-  {{/if}}
 </template>
 
 <template name="MessageHistory">
-  <div class="messages">
-    <ul>
-    {{#each messages}}
-      <li>
-        {{> MessageInfo}}
-      </li>
-    {{else}}
-      <li>No messages yet.</li>
-    {{/each}}
-  </ul>
-  </div>
 </template>
 
 <template name="MessageInfo">
@@ -88,6 +85,7 @@
 <template name="SendMessage">
   <form>
     <input class="text" type="text" autofocus name="message" placeholder="Send a message" />
+    <input class="text" type="hidden" name="convoWith" value={{activeConvo}} />
     <input class="send" type="submit" value="Send" />
   </form>
 </template>

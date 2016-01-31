@@ -98,7 +98,14 @@ if (Meteor.isClient) {
     'click [data-conversation-start]': function(event, template) {
       var person = this.profile.name;
 
-      Convos.insert({with: person})
+      Convos.insert({with: person});
+      Session.set('activeConvo', person);
+    },
+
+    'click [data-conversation]': function(event, template) {
+      // debugger
+      var person = this.with;
+
       Session.set('activeConvo', person);
     }
   }) 

@@ -39,8 +39,8 @@
   <h2>Current Conversations</h2>
 
   {{#each conversations}}
-    <div>
-      {{conversation.with}}
+    <div data-conversation>
+      {{this.with}}
     </div>
   {{/each}}
 </template>

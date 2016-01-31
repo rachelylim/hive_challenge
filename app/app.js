@@ -13,6 +13,21 @@ Messages.allow({
   }
 })
 
+Convos = new Mongo.Collection('conversations');
+Convos.allow({
+  insert: function(userId, doc) {
+    return !!userId;
+  },
+
+  update: function(userId, doc) {
+    return false;
+  },
+
+  remove: function(userId, doc) {
+    return false;
+  }
+})
+
 
 // CLIENT //
 
@@ -21,6 +36,7 @@ if (Meteor.isClient) {
 
   Meteor.subscribe('users');
   Meteor.subscribe('messages');
+  Meteor.subscribe('conversations');
 
   Template.SideMenu.helpers({
     users: function() {
@@ -61,6 +77,12 @@ if (Meteor.isClient) {
       form.reset();
     }
   })
+
+  Template.LoiterRooms.helpers({
+    activeConvo: function() {
+      return Session.get('activeConvo');
+    }
+  })
   // 
 };
 
@@ -73,6 +95,10 @@ if (Meteor.isServer) {
 
   Meteor.publish('messages', function(){
     return Messages.find({}, {sort: {timestamp: 1}});
+  });
+
+  Meteor.publish('conversations', function() {
+    return Convos.find({}, {sort: {type: 1}});
   });
   
 };

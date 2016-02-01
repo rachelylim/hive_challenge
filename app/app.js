@@ -28,21 +28,6 @@ GlobalMessages.allow({
   }
 })
 
-Convos = new Mongo.Collection('conversations');
-Convos.allow({
-  insert: function(userId, doc) {
-    return !!userId;
-  },
-
-  update: function(userId, doc) {
-    return false;
-  },
-
-  remove: function(userId, doc) {
-    return false;
-  }
-})
-
 Meteor.users.allow({
   insert: function(userId, doc) {
     return !!userId;
@@ -57,20 +42,11 @@ if (Meteor.isClient) {
   Meteor.subscribe('users');
   Meteor.subscribe('messages');
   Meteor.subscribe('global');
-  Meteor.subscribe('conversations');
 
   Template.SideMenu.helpers({
     users: function() {
       var user = Meteor.user().profile.name;
       return Meteor.users.find({profile: {$ne: {name: user}}});
-    },
-
-    everyone: function() {
-      return Convos.findOne({with: 'Everyone'})
-    },
-
-    conversations: function() {
-      return Convos.find({with: {$ne: 'Everyone'}}, {sort: {with: 1}});
     }
   });
 
@@ -96,7 +72,6 @@ if (Meteor.isClient) {
           login: user,
           timestamp: new Date,
           message: message
-          // with: participants
         })
       } else {
         Messages.insert({
@@ -106,6 +81,16 @@ if (Meteor.isClient) {
           with: participants
         })
       }
+
+      var height = 0
+
+      $('.messages').each(function(i, value){
+        height += parseInt($(this).height());
+      });
+
+      height += '';
+
+      $('.chatbox').animate({scrollTop: height}, "slow");
 
       form.reset();
     }
@@ -129,22 +114,13 @@ if (Meteor.isClient) {
     }
   })
 
-
   Template.SideMenu.events({
-    'click [data-conversation-start]': function(event, template) {
-      var person = this.profile.name;
+    'click [data-conversation]': function(event, template, doc) {
+      var person = event.toElement.innerText;
+      var users = $(".username").removeAttr('id');
 
-      if(Convos.findOne({with: person})) {
-        Session.set('activeConvo', person);  
-      } else {
-        Convos.insert({with: person});
-        Session.set('activeConvo', person);
-      }
-    },
-
-    'click [data-conversation]': function(event, template) {
-      var person = this.with
-
+      event.toElement.id = 'active'
+      
       Session.set('activeConvo', person);
     }
   }) 
@@ -164,14 +140,6 @@ if (Meteor.isServer) {
   Meteor.publish('global', function() {
     return GlobalMessages.find({}, {sort: {timestamp: 1}});
   })
-
-  Meteor.publish('conversations', function() {
-    return Convos.find({}, {sort: {type: 1}});
-  });
-  
 };
 
-// if (!Convos.findOne({with: "Everyone"})) {
-//   Convos.insert({with: "Everyone"});
-// }
 

@@ -27,59 +27,42 @@
   <div id="loiterRooms">
     {{> LoiterRooms}}
   </div>
+
+  {{> SendMessage}}
 </template>
 
 <!-- SIDEMENU TEMPLATE -->
 <template name="SideMenu">
-  Hi, {{> loginButtons}}
+  <div id="signout">
+    Hi, {{> loginButtons}}
+  </div>
 
-  <h2>Users</h2>
-
-    <div>You</div>
+  <h2>Loiter with...</h2>
+  <ul>
+    <li data-conversation class="username">Everyone</li>
     {{#each users}}
-      <div data-conversation-start class="username">
+      <li data-conversation class="username">
         {{this.profile.name}}
-      </div>
+      </li>
     {{/each}}
+  </ul>
 
-  <h2>Current Loiterings</h2>
-    {{#with everyone}}
-      <div data-conversation>
-        Everyone
-      </div>
-    {{/with}}
-
-    {{#each conversations}}
-      <div data-conversation>
-        {{this.with}}
-      </div>
-    {{/each}}
 </template>
 
 <!-- LOITER ROOM TEMPLATE -->
 <template name="LoiterRooms">
   <h2>Loitering with {{activeConvo}}</h2>
-    <section>
-      <div class="messages-with-{{activeConvo}}">
-        <ul>
-        {{#each messages}}
-          <li>
-            {{> MessageInfo}}
-          </li>
-        {{else}}
-          <li>No messages yet.</li>
-        {{/each}}
-      </ul>
-      </div>
-      <!-- {{> MessageHistory}} -->
-    </section>
-
-    <footer>
-      {{> SendMessage}}
-    </footer>
-</template>
-
-<template name="MessageHistory">
+    <div class="chatbox">
+      <ul class="messages">
+      {{#each messages}}
+        <li>
+          {{> MessageInfo}}
+        </li>
+      {{else}}
+        <li>No messages yet.</li>
+      {{/each}}
+    </ul>
+    </div>
 </template>
 
 <template name="MessageInfo">

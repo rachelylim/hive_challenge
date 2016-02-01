@@ -4,7 +4,6 @@
   font-family: sans-serif;
 }
 
-
 .login{
   border-radius: 10px;
   text-align: center;
@@ -86,7 +85,7 @@ form{
   width: 100%;
 }
 
-input{
+input[type=text]{
   border: none;
   border-radius: 15px;
   background: lightgrey;
@@ -97,6 +96,10 @@ input{
 }
 
 input[type=submit]{
+  background: #80ffde;
   width: 15%;
   height: 40px;
+  border: none;
+  border-radius: 15px;
+  font-size: 20px;
 }

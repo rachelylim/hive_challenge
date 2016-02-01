@@ -42,7 +42,6 @@ if (Meteor.isClient) {
   Meteor.subscribe('users');
   Meteor.subscribe('messages');
   Meteor.subscribe('global');
-  Meteor.subscribe('conversations');
 
   Template.SideMenu.helpers({
     users: function() {

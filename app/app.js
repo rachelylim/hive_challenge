@@ -71,13 +71,12 @@ if (Meteor.isClient) {
       var message = messageEl.value;
       var user = Meteor.user().profile.name;
       var person = Session.get('activeConvo');
-      // console.log(message);
 
       Messages.insert({
         login: user,
         timestamp: new Date,
         message: message,
-        with: person
+        with: [person, user]
       });
 
       form.reset();
@@ -90,9 +89,11 @@ if (Meteor.isClient) {
     },
 
     messages: function(data) {
+      var user = Meteor.user().profile.name;
       var person = Session.get('activeConvo');
-      return Messages.find({with: person});
-    },
+      
+      return Messages.find({with: [person, user]}, {sort: {timestamp: 1}});
+    }
   })
 
 
@@ -100,13 +101,16 @@ if (Meteor.isClient) {
     'click [data-conversation-start]': function(event, template) {
       var person = this.profile.name;
 
-      Convos.insert({with: person});
-      Session.set('activeConvo', person);
+      if(Convos.findOne({with: person})) {
+        Session.set('activeConvo', person);  
+      } else {
+        Convos.insert({with: person});
+        Session.set('activeConvo', person);
+      }
     },
 
     'click [data-conversation]': function(event, template) {
-      // debugger
-      var person = this.with;
+      var person = this.with
 
       Session.set('activeConvo', person);
     }
@@ -129,3 +133,17 @@ if (Meteor.isServer) {
   });
   
 };
+
+// if (!Convos.findOne({with: "Everyone"})) {
+//   Convos.insert({with: "Everyone"});
+// }
+
+// if (!Convos.findOne({with: "Will Mchale"})) {
+//   Convos.insert({with: "Will Mchale"});
+// }
+
+// if (!Meteor.users.findOne({profile: {name: "Jessica Park"}})) {
+//   Meteor.users.insert({profile: {name: "Jessica Park"}});
+// }
+
+

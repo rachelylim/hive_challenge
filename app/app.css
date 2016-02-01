@@ -37,15 +37,14 @@
   margin-left: 20px;
 }
 
+#active {
+  background: lightgrey;
+}
+
 .username{
   font-size: 20px;
   width: 250px;
   height: 35px;
-}
-
-.username:hover{
-  background: lightgrey;
-  cursor: pointer;
 }
 
 #loiterRooms{

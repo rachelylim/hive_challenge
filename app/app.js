@@ -48,10 +48,6 @@ if (Meteor.isClient) {
     users: function() {
       var user = Meteor.user().profile.name;
       return Meteor.users.find({profile: {$ne: {name: user}}});
-    },
-
-    isActive: function() {
-      return Session.equals('activeConvo', this.profile.name) ? 'active' : '';
     }
   });
 
@@ -109,14 +105,15 @@ if (Meteor.isClient) {
     }
   })
 
-
   Template.SideMenu.events({
-    'click [data-conversation]': function(event, template) {
-      var person = this.profile.name
+    'click [data-conversation]': function(event, template, doc) {
+      var person = event.toElement.innerText;
+      var users = $(".username").removeAttr('id');
 
+      event.toElement.id = 'active'
+      
       Session.set('activeConvo', person);
     }
-
   }) 
 };
 
@@ -136,7 +133,4 @@ if (Meteor.isServer) {
   })
 };
 
-// if (!Convos.findOne({with: "Everyone"})) {
-//   Convos.insert({with: "Everyone"});
-// }
 

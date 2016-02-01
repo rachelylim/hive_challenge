@@ -13,6 +13,8 @@ Messages.allow({
   }
 })
 
+GlobalMessages = [];
+
 Convos = new Mongo.Collection('conversations');
 Convos.allow({
   insert: function(userId, doc) {
@@ -45,15 +47,17 @@ if (Meteor.isClient) {
 
   Template.SideMenu.helpers({
     users: function() {
-      return Meteor.users.find();
+      var user = Meteor.user().profile.name;
+      return Meteor.users.find({profile: {$ne: {name: user}}});
+    },
+
+    everyone: function() {
+      return Convos.findOne({with: 'Everyone'})
     },
 
     conversations: function() {
-      return Convos.find();
+      return Convos.find({with: {$ne: 'Everyone'}}, {sort: {with: 1}});
     }
-  });
-
-  Template.MessageHistory.helpers({
   });
 
   Template.MessageInfo.helpers({
@@ -71,13 +75,18 @@ if (Meteor.isClient) {
       var message = messageEl.value;
       var user = Meteor.user().profile.name;
       var person = Session.get('activeConvo');
+      var participants = [person, user].sort();
 
-      Messages.insert({
+      var newMessage = Messages.insert({
         login: user,
         timestamp: new Date,
         message: message,
-        with: [person, user]
+        with: participants
       });
+
+      if(participants.includes("Everyone")) {
+        GlobalMessages.push(newMessage);
+      }
 
       form.reset();
     }
@@ -91,8 +100,13 @@ if (Meteor.isClient) {
     messages: function(data) {
       var user = Meteor.user().profile.name;
       var person = Session.get('activeConvo');
+      var participants = [person, user].sort();
       
-      return Messages.find({with: [person, user]}, {sort: {timestamp: 1}});
+      if(participants.includes("Everyone")) {
+        return GlobalMessages;
+      } else {
+        return Messages.find({with: participants}, {sort: {timestamp: 1}});
+      }
     }
   })
 

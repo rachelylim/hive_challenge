@@ -35,13 +35,19 @@
 
   <h2>Users</h2>
 
-  {{#each users}}
-    <div data-conversation-start class="username">
-      {{this.profile.name}}
-    </div>
-  {{/each}}
+    <div>You</div>
+    {{#each users}}
+      <div data-conversation-start class="username">
+        {{this.profile.name}}
+      </div>
+    {{/each}}
 
   <h2>Current Loiterings</h2>
+    {{#with everyone}}
+      <div data-conversation>
+        Everyone
+      </div>
+    {{/with}}
 
     {{#each conversations}}
       <div data-conversation>

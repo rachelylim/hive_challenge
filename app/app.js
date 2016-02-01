@@ -82,6 +82,16 @@ if (Meteor.isClient) {
         })
       }
 
+      var height = 0
+
+      $('.messages').each(function(i, value){
+        height += parseInt($(this).height());
+      });
+
+      height += '';
+
+      $('.chatbox').animate({scrollTop: height}, "slow");
+
       form.reset();
     }
   })

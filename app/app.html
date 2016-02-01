@@ -27,6 +27,8 @@
   <div id="loiterRooms">
     {{> LoiterRooms}}
   </div>
+
+  {{> SendMessage}}
 </template>
 
 <!-- SIDEMENU TEMPLATE -->
@@ -48,27 +50,17 @@
 <!-- LOITER ROOM TEMPLATE -->
 <template name="LoiterRooms">
   <h2>Loitering with {{activeConvo}}</h2>
-    <section>
-      <div class="messages-with-{{activeConvo}}">
-        <ul>
-        {{#each messages}}
-          <li>
-            {{> MessageInfo}}
-          </li>
-        {{else}}
-          <li>No messages yet.</li>
-        {{/each}}
-      </ul>
-      </div>
-      <!-- {{> MessageHistory}} -->
-    </section>
-
-    <footer>
-      {{> SendMessage}}
-    </footer>
-</template>
-
-<template name="MessageHistory">
+    <div class="chatbox">
+      <ul class="messages">
+      {{#each messages}}
+        <li>
+          {{> MessageInfo}}
+        </li>
+      {{else}}
+        <li>No messages yet.</li>
+      {{/each}}
+    </ul>
+    </div>
 </template>
 
 <template name="MessageInfo">

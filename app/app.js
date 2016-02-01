@@ -13,7 +13,20 @@ Messages.allow({
   }
 })
 
-GlobalMessages = [];
+GlobalMessages = new Mongo.Collection('global');
+GlobalMessages.allow({
+  insert: function(userId, doc) {
+    return !!userId;
+  },
+
+  update: function(userId, doc) {
+    return false;
+  },
+
+  remove: function(userId, doc) {
+    return false;
+  }
+})
 
 Convos = new Mongo.Collection('conversations');
 Convos.allow({
@@ -43,6 +56,7 @@ if (Meteor.isClient) {
 
   Meteor.subscribe('users');
   Meteor.subscribe('messages');
+  Meteor.subscribe('global');
   Meteor.subscribe('conversations');
 
   Template.SideMenu.helpers({
@@ -77,15 +91,20 @@ if (Meteor.isClient) {
       var person = Session.get('activeConvo');
       var participants = [person, user].sort();
 
-      var newMessage = Messages.insert({
-        login: user,
-        timestamp: new Date,
-        message: message,
-        with: participants
-      });
-
       if(participants.includes("Everyone")) {
-        GlobalMessages.push(newMessage);
+        GlobalMessages.insert({
+          login: user,
+          timestamp: new Date,
+          message: message
+          // with: participants
+        })
+      } else {
+        Messages.insert({
+          login: user,
+          timestamp: new Date,
+          message: message,
+          with: participants
+        })
       }
 
       form.reset();
@@ -103,7 +122,7 @@ if (Meteor.isClient) {
       var participants = [person, user].sort();
       
       if(participants.includes("Everyone")) {
-        return GlobalMessages;
+        return GlobalMessages.find({}, {sort: {timestamp: 1}});
       } else {
         return Messages.find({with: participants}, {sort: {timestamp: 1}});
       }
@@ -138,9 +157,13 @@ if (Meteor.isServer) {
     return Meteor.users.find({}, {profile: 1});
   });
 
-  Meteor.publish('messages', function(){
+  Meteor.publish('messages', function() {
     return Messages.find({}, {sort: {timestamp: 1}});
   });
+
+  Meteor.publish('global', function() {
+    return GlobalMessages.find({}, {sort: {timestamp: 1}});
+  })
 
   Meteor.publish('conversations', function() {
     return Convos.find({}, {sort: {type: 1}});
@@ -151,13 +174,4 @@ if (Meteor.isServer) {
 // if (!Convos.findOne({with: "Everyone"})) {
 //   Convos.insert({with: "Everyone"});
 // }
-
-// if (!Convos.findOne({with: "Will Mchale"})) {
-//   Convos.insert({with: "Will Mchale"});
-// }
-
-// if (!Meteor.users.findOne({profile: {name: "Jessica Park"}})) {
-//   Meteor.users.insert({profile: {name: "Jessica Park"}});
-// }
-
 

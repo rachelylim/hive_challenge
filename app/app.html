@@ -33,27 +33,16 @@
 <template name="SideMenu">
   Hi, {{> loginButtons}}
 
-  <h2>Users</h2>
-
-    <div>You</div>
+  <h2>Loiter with...</h2>
+  <ul>
+    <li data-conversation class="username" id="{{isActive}}">Everyone</li>
     {{#each users}}
-      <div data-conversation-start class="username">
+      <li data-conversation class="username" id="{{isActive}}">
         {{this.profile.name}}
-      </div>
+      </li>
     {{/each}}
+  </ul>
 
-  <h2>Current Loiterings</h2>
-    {{#with everyone}}
-      <div data-conversation>
-        Everyone
-      </div>
-    {{/with}}
-
-    {{#each conversations}}
-      <div data-conversation>
-        {{this.with}}
-      </div>
-    {{/each}}
 </template>
 
 <!-- LOITER ROOM TEMPLATE -->

@@ -13,6 +13,21 @@ Messages.allow({
   }
 })
 
+GlobalMessages = new Mongo.Collection('global');
+GlobalMessages.allow({
+  insert: function(userId, doc) {
+    return !!userId;
+  },
+
+  update: function(userId, doc) {
+    return false;
+  },
+
+  remove: function(userId, doc) {
+    return false;
+  }
+})
+
 Convos = new Mongo.Collection('conversations');
 Convos.allow({
   insert: function(userId, doc) {
@@ -41,19 +56,22 @@ if (Meteor.isClient) {
 
   Meteor.subscribe('users');
   Meteor.subscribe('messages');
+  Meteor.subscribe('global');
   Meteor.subscribe('conversations');
 
   Template.SideMenu.helpers({
     users: function() {
-      return Meteor.users.find();
+      var user = Meteor.user().profile.name;
+      return Meteor.users.find({profile: {$ne: {name: user}}});
+    },
+
+    everyone: function() {
+      return Convos.findOne({with: 'Everyone'})
     },
 
     conversations: function() {
-      return Convos.find();
+      return Convos.find({with: {$ne: 'Everyone'}}, {sort: {with: 1}});
     }
-  });
-
-  Template.MessageHistory.helpers({
   });
 
   Template.MessageInfo.helpers({
@@ -71,13 +89,23 @@ if (Meteor.isClient) {
       var message = messageEl.value;
       var user = Meteor.user().profile.name;
       var person = Session.get('activeConvo');
+      var participants = [person, user].sort();
 
-      Messages.insert({
-        login: user,
-        timestamp: new Date,
-        message: message,
-        with: [person, user]
-      });
+      if(participants.includes("Everyone")) {
+        GlobalMessages.insert({
+          login: user,
+          timestamp: new Date,
+          message: message
+          // with: participants
+        })
+      } else {
+        Messages.insert({
+          login: user,
+          timestamp: new Date,
+          message: message,
+          with: participants
+        })
+      }
 
       form.reset();
     }
@@ -91,8 +119,13 @@ if (Meteor.isClient) {
     messages: function(data) {
       var user = Meteor.user().profile.name;
       var person = Session.get('activeConvo');
+      var participants = [person, user].sort();
       
-      return Messages.find({with: [person, user]}, {sort: {timestamp: 1}});
+      if(participants.includes("Everyone")) {
+        return GlobalMessages.find({}, {sort: {timestamp: 1}});
+      } else {
+        return Messages.find({with: participants}, {sort: {timestamp: 1}});
+      }
     }
   })
 
@@ -124,9 +157,13 @@ if (Meteor.isServer) {
     return Meteor.users.find({}, {profile: 1});
   });
 
-  Meteor.publish('messages', function(){
+  Meteor.publish('messages', function() {
     return Messages.find({}, {sort: {timestamp: 1}});
   });
+
+  Meteor.publish('global', function() {
+    return GlobalMessages.find({}, {sort: {timestamp: 1}});
+  })
 
   Meteor.publish('conversations', function() {
     return Convos.find({}, {sort: {type: 1}});
@@ -137,13 +174,4 @@ if (Meteor.isServer) {
 // if (!Convos.findOne({with: "Everyone"})) {
 //   Convos.insert({with: "Everyone"});
 // }
-
-// if (!Convos.findOne({with: "Will Mchale"})) {
-//   Convos.insert({with: "Will Mchale"});
-// }
-
-// if (!Meteor.users.findOne({profile: {name: "Jessica Park"}})) {
-//   Meteor.users.insert({profile: {name: "Jessica Park"}});
-// }
-
 
